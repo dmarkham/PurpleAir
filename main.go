@@ -50,11 +50,12 @@ func main() {
 	if err != nil {
 		panic(errors.WithStack(err))
 	}
-	//fmt.Println(pData)
-	// ["ID","pm","age","pm_0","pm_1","pm_2","pm_3","pm_4","pm_5","pm_6",
-	// "conf","pm1","pm_10","p1","p2","p3","p4","p5","p6","Humidity",
-	// "Temperature","Pressure","Elevation","Type","Label","Lat","Lon","Icon","isOwner","Flags",
-	// "Voc","Ozone1","Adc","CH"]
+
+	//fmt.Println(pData.Fields)
+	// [ID pm pm_cf_1 pm_atm age pm_0 pm_1 pm_2 pm_3 pm_4
+	//  pm_5 pm_6 conf pm1 pm_10 p1 p2 p3 p4 p5
+	// p6 Humidity Temperature Pressure Elevation Type Label Lat Lon Icon
+	// isOwner Flags Voc Ozone1 Adc CH]
 
 	// [35307,27.5,0,27.5,27.3,27.3,26.5,20.1,16.5,13.8,
 	// 100,15.2,30.9,2765.3,806.4,207.3,23.3,3.3,2.1,58,
@@ -68,23 +69,32 @@ func main() {
 		//stationID, ok := row[0].(float64)
 		//if !ok {
 		//	panic(errors.New("Station ID did not Convert"))
-		//	}
+		//}
 
-		//humidity, ok := row[19].(float64)
+		//humidity, ok := row[21].(float64)
 		//if !ok {
 		//	panic(errors.New("Humidity did not Convert"))
-		//	}
+		//}
 		pm, ok := row[1].(float64)
 		if !ok {
 			panic(errors.New("PM did not Convert"))
 		}
-		temp, ok := row[20].(float64)
+		temp, ok := row[22].(float64)
 		if !ok {
 			panic(errors.New("Temp did not Convert"))
 		}
-		temp = temp - 8
+		temp = temp - 8 // on AVG the Temp is over by 8
 
-		//fmt.Printf("StationID:%v, PM2.5:%v Temp: %v, Humidity: %v\n", stationID, pm, temp, humidity)
+		age, ok := row[4].(float64)
+		if !ok {
+			panic(errors.New("Age did not convert"))
+		}
+		if age > 60*60 {
+			// fmt.Println("Skipping Too old AGE:", row[0], age, row[4])
+			continue
+		}
+
+		//fmt.Printf("StationID:%v, PM2.5:%v Temp: %v, Humidity: %v AGE: %v\n", stationID, pm, temp, humidity, age)
 		count++
 		sumPM = sumPM + pm
 		sumTemp = sumTemp + temp
