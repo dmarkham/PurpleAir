@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/pkg/errors"
 )
@@ -39,13 +40,17 @@ func main() {
 	if err != nil {
 		panic(errors.WithStack(err))
 	}
+
+	if resp.StatusCode == 429 {
+		os.Exit(1)
+	}
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		panic(errors.WithStack(err))
 	}
 	defer resp.Body.Close()
 	var pData PurpleDate
-
+	//fmt.Println(string(data))
 	err = json.Unmarshal([]byte(data), &pData)
 	if err != nil {
 		panic(errors.WithStack(err))
@@ -108,9 +113,12 @@ func main() {
 		color = "#c91a1a"
 	}
 
+	//(52°F − 32) × 5/9
+	fer := sumTemp / count
+	cel := (fer - 32) * 5 / 9
 	o := output{
 		Version:  "1",
-		FullText: fmt.Sprintf("Air Quality: %0.1f Temp: %0.1f ", pmavg, sumTemp/count),
+		FullText: fmt.Sprintf("Air Quality: %0.1fpm Temp:%0.1f°F %0.1f°C   Nodes: %v  ", pmavg, fer, cel, count),
 		Color:    color,
 	}
 	bytes, err := json.Marshal(o)
