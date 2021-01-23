@@ -118,6 +118,5 @@ func main() {
 		panic(errors.WithStack(err))
 	}
 
-	fmt.Print(string(bytes))
-
+	fmt.Println(string(bytes))
 }
