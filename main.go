@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 
@@ -44,7 +44,7 @@ func main() {
 	if resp.StatusCode == 429 {
 		os.Exit(1)
 	}
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		panic(errors.WithStack(err))
 	}
@@ -61,7 +61,6 @@ func main() {
 	//  pm_5 pm_6 conf pm1 pm_10 p1 p2 p3 p4 p5
 	// p6 Humidity Temperature Pressure Elevation Type Label Lat Lon Icon
 	// isOwner Flags Voc Ozone1 Adc CH]
-
 	// [35307,27.5,0,27.5,27.3,27.3,26.5,20.1,16.5,13.8,
 	// 100,15.2,30.9,2765.3,806.4,207.3,23.3,3.3,2.1,58,
 	// 81,1004.94,65,0,"2819 W CANYON AVE",32.798355,-117.11712,0,0,0,
